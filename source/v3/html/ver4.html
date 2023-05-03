@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Webcam Sticker Color Changer</title>
+  <style>
+    #canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <h1>Webcam Sticker Color Changer</h1>
+  <div>
+    <label for="color-picker">Color:</label>
+    <input type="color" id="color-picker">
+  </div>
+  <canvas id="canvas" width="640" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const colorPicker = document.getElementById('color-picker');
+    const ctx = canvas.getContext('2d');
+    let sticker = null;
+
+    // 웹캠으로부터 비디오 스트림을 가져옵니다.
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        // 비디오가 로드되면 캔버스에 그립니다.
+        video.addEventListener('loadedmetadata', () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          draw(video);
+        });
+      })
+      .catch(err => {
+        console.error('Error accessing webcam', err);
+      });
+
+    // 캔버스에 비디오 스트림을 그립니다.
+    function draw(video) {
+      ctx.save();
+      ctx.scale(-1, 1); // x축 좌우반전
+      ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      ctx.restore();
+    //  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (sticker) {
+        const width = canvas.width; // 스티커 이미지의 크기를 조절합니다.
+        const height = sticker.height * 0.3;
+        const x = 0;
+        const y = canvas.height-height;
+        ctx.drawImage(sticker, x, y, width, height);
+      }
+      requestAnimationFrame(() => draw(video));
+    }
+
+
+
+    // 컬러 선택기 이벤트를 등록합니다.
+    colorPicker.addEventListener('input', e => {
+      const color = e.target.value;
+      if (sticker) {
+        ctx.globalCompositeOperation = 'source-in';
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+    });
+
+    // 스티커 이미지를 로드합니다.
+    const img = new Image();
+    img.src = 'personal.png';
+    img.onload = () => {
+      sticker = img;
+    };
+  </script>
+</body>
+</html>
