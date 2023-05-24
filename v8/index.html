@@ -14,6 +14,7 @@
   <div>
     <label for="color-picker">Color:</label>
     <input type="color" id="color-picker" list="winter-cool">
+
     <datalist id="winter-cool">
       <option value="#FFFFFF">winter cool</option>
       <option value="#F1ED58">winter cool</option>
@@ -44,6 +45,9 @@
       <option value="#6C266C">winter cool</option>
       <option value="#FFFAC3">winter cool</option>
     </datalist>
+    <input type="radio" name="color-palette" value="option1">
+
+
     <input type="color" id="color-picker2" list="summer-cool">
     <datalist id="summer-cool">
       <option value="#FDF795">summer cool</option>
@@ -75,6 +79,10 @@
       <option value="#0093CF">summer cool</option>
 
     </datalist>
+    <input type="radio" name="color-palette" value="option2">
+
+
+
     <input type="color" id="color-picker3" list="spring-warm">
     <datalist id="spring-warm">
       <option value="#FFF9BF">spring warm</option>
@@ -105,6 +113,8 @@
       <option value="#FFC353">spring warm</option>
       <option value="#FCDEB8">spring warm</option>
     </datalist>
+    <input type="radio" name="color-palette" value="option3">
+
     <input type="color" id="color-picker4" list="autumn-warm">
     <datalist id="autumn-warm">
       <option value="#FEE69C">autumn warm</option>
@@ -135,6 +145,8 @@
       <option value="#C0AF01">autumn warm</option>
       <option value="#B3AB7D">autumn warm</option>
     </datalist>
+    <input type="radio" name="color-palette" value="option4">
+    <button onclick="getResult()">결과 보기</button>
   </div>
    <canvas id="canvas" width="640" height="480"></canvas>
   <script>
@@ -146,7 +158,7 @@
     const ctx = canvas.getContext('2d');
     let sticker = null;
 
-    
+
 
     // 웹캠으로부터 비디오 스트림을 가져옵니다.
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -179,7 +191,7 @@
         ctx.drawImage(sticker, x, y, width, height);
       }
       requestAnimationFrame(() => draw(video));
-      
+
     }
 
   colorPicker.addEventListener('input', e => {
@@ -276,7 +288,31 @@ colorPicker4.addEventListener('input', e => {
       .catch(err => {
         console.error('Webcam access denied', err);
       });
+
+  function getResult() {
+    var options = document.getElementsByName("color-palette");
+    var selectedOption = "";
+
+    for(var i = 0; i < options.length; i++) {
+      if(options[i].checked) {
+        selectedOption = options[i].value;
+        break;
+      }
+    }
+
+    if(selectedOption === "option1") {
+      window.location.href = "winter_result.html";
+    } else if(selectedOption === "option2") {
+      window.location.href = "summer_result.html";
+    } else if(selectedOption === "option3") {
+      window.location.href = "spring.html";
+    } else if(selectedOption === "option4") {
+      window.location.href = "autumn_result.html";
+    } else {
+      alert("컬러 팔레트를 선택해주세요.");
+    }
+}
+
   </script>
 </body>
 </html>
-

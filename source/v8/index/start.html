@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Result</title>
+  <style>
+    /* 본문 가운데 정렬 */
+    body {
+      background-color: #ffffcc;  /*연한 노란색 */
+      justify-content: center; /* 가로 가운데 정렬 */
+      text-align: center; /* 내용 가운데 정렬 */
+    }
+
+    /* 제목 스타일 */
+    h1 {
+      margin-top: 100px; /* 원하는 여백 크기를 설정합니다 */
+    }   
+
+    /* 본문 내용 스타일 */
+    .content {
+      margin-top: 50px; /* 위쪽 여백 설정 */
+    }
+
+    /* 본문 내용 스타일 */
+    .content p {
+      margin: 20px 0; /* 상하 여백 설정 */
+    }
+
+    #my_button {
+      background-color: skyblue;
+      color: white;
+      border: none;
+      
+      padding: 10px 30px;
+
+      border-radius: 10px; /* 모서리의 둥글기 정도를 조정합니다 */
+    }
+    
+    ul {
+    list-style-type: decimal; /* 숫자로 표시 */
+    }
+    img {
+      width: 700px; /* 이미지의 너비를 조정합니다 */
+      height: auto; /* 이미지의 높이를 자동으로 조정합니다 */
+    }
+
+    
+  </style>
+</head>
+<body>
+  
+  <h1>Find Your Own Personal Color</h1>
+  <h2>"자신만의 퍼스널 컬러를 진단해보세요"</h2>
+  
+  <div>
+    <p>* 진단 시 주의사항</p>
+    <ul>
+      <li> 카메라 권한을 허용해주세요</li>
+      <li> 태양광과 비슷한 조명에서 진단해주세요</li>
+      <li> 화면 밝기를 최대로 높여주세요</li><br>
+      <li> 본인이 좋아하는 색이 아닌 다음과 같은 기준을 만족하는 색을 선택해주세요!</li>
+    </ul>
+    <img src="../images/컬러선택기준.PNG" alt="컬러선택기준"><br><br>
+    <button id="my_button" onclick="getResult()">진단하기</button>
+
+  </div>
+  <script>
+  function getResult() {
+    window.location.href = "index.html";
+}
+</script>
+</body>
+</html>

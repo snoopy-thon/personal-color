@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Webcam Sticker Color Changer</title>
+  <style>
+    #canvas {
+      border: 1px solid black;
+       }
+  </style>
+</head>
+<body>
+  <h1>Webcam Sticker Color Changer</h1>
+  <div>
+    <label for="color-picker">Color:</label>
+    <input type="color" id="color-picker" list="summer_light">
+    <datalist id="summer_light">
+      <option value="#E5E3D7">summer_light</option>
+      <option value="#C1BFB3">summer_light</option>
+      <option value="#847D77">summer_light</option>
+      <option value="#B1B7B7">summer_light</option>
+      <option value="#7E959D">summer_light</option>
+      <option value="#8F797B">summer_light</option>
+      <option value="#5C4C4D">summer_light</option>
+      <option value="#F5A8BA">summer_light</option>
+      <option value="#FD80A8">summer_light</option>
+      <option value="#DD5885">summer_light</option>
+      <option value="#90ACDB">summer_light</option>
+      <option value="#38619F">summer_light</option>
+      <option value="#155B8F">summer_light</option>
+      <option value="#1BA685">summer_light</option>
+      <option value="#217E76">summer_light</option>
+      <option value="#9783CA">summer_light</option>
+      <option value="#554880">summer_light</option>
+      <option value="#84CAEC">summer_light</option>
+      <option value="#6AB8E6">summer_light</option>
+      <option value="#5378BF">summer_light</option>
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option1">
+    <input type="color" id="color-picker2" list="summer_true">
+    <datalist id="summer_true">
+      <option value="#DCDACD">summer_true</option>
+      <option value="#D1CCC6">summer_true</option>
+      <option value="#A0A797">summer_true</option>
+      <option value="#7F8078">summer_true</option>
+      <option value="#5B5851">summer_true</option>
+      <option value="#A4B1B7">summer_true</option>
+      <option value="#798A9C">summer_true</option>
+      <option value="#4F8794">summer_true</option>
+      <option value="#2E6E7A">summer_true</option>
+      <option value="#42474D">summer_true</option>
+      <option value="#FAC5D7">summer_true</option>
+      <option value="#D68AA8">summer_true</option>
+      <option value="#B75C87">summer_true</option>
+      <option value="#852F54">summer_true</option>
+      <option value="#4B497B">summer_true</option>
+      <option value="#64AACB">summer_true</option>
+      <option value="#538DB3">summer_true</option>
+      <option value="#346EA0">summer_true</option>
+      <option value="#9EA7D2">summer_true</option>
+      <option value="#7C7FB2">summer_true</option>
+
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option2">
+    <input type="color" id="color-picker3" list="summer_soft">
+    <datalist id="summer_soft">
+      <option value="#DDDECC">summer_soft</option>
+      <option value="#C7C5B9">summer_soft</option>
+      <option value="#9C8F89">summer_soft</option>
+      <option value="#513D3F">summer_soft</option>
+      <option value="#413F40">summer_soft</option>
+      <option value="#F4B9BD">summer_soft</option>
+      <option value="#C48C8F">summer_soft</option>
+      <option value="#B38285">summer_soft</option>
+      <option value="#8B475E">summer_soft</option>
+      <option value="#713745">summer_soft</option>
+      <option value="#8892B5">summer_soft</option>
+      <option value="#596178">summer_soft</option>
+      <option value="#54495A">summer_soft</option>
+      <option value="#60947D">summer_soft</option>
+      <option value="#37574C">summer_soft</option>
+      <option value="#79BCC5">summer_soft</option>
+      <option value="#4F7B94">summer_soft</option>
+      <option value="#2F4553">summer_soft</option>
+      <option value="#E3D99C">summer_soft</option>
+      <option value="#D8CB87">summer_soft</option>
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option3">
+    <button onclick="getResult()">결과 보기</button>
+  </div>
+   <canvas id="canvas" width="640" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const colorPicker = document.getElementById('color-picker');
+    const colorPicker2 = document.getElementById('color-picker2');
+    const colorPicker3 = document.getElementById('color-picker3');
+    const ctx = canvas.getContext('2d');
+    let sticker = null;
+
+    
+
+    // 웹캠으로부터 비디오 스트림을 가져옵니다.
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        // 비디오가 로드되면 캔버스에 그립니다.
+        video.addEventListener('loadedmetadata', () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          draw(video);
+        });
+      })
+      .catch(err => {
+        console.error('Error accessing webcam', err);
+      });
+
+    // 캔버스에 비디오 스트림을 그립니다.
+      function draw(video) {
+      ctx.save();
+      ctx.scale(-1, 1); // x축 좌우반전
+      ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      ctx.restore();
+      if (sticker) {
+        const width = canvas.width; // 스티커 이미지의 크기를 조절합니다.
+        const height = sticker.height * 0.3;
+        const x = 0;
+        const y = canvas.height-height;
+        ctx.drawImage(sticker, x, y, width, height);
+      }
+      requestAnimationFrame(() => draw(video));
+      
+    }
+
+  colorPicker.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    // 스티커 이미지를 색상이 적용된 이미지로 다시 그립니다.
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+colorPicker2.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+colorPicker3.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+
+
+
+
+    // 스티커 이미지를 로드합니다.
+    const stickerImage = new Image();
+    stickerImage.onload = () => {
+      sticker = stickerImage;
+    };
+    stickerImage.src = 'personal.png'; // 스티커 이미지의 경로를 지정해야 합니다.
+
+
+        // 웹캠 접근 권한을 요청합니다.
+        navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        console.log('Webcam access granted');
+      })
+      .catch(err => {
+        console.error('Webcam access denied', err);
+      });
+
+      function getResult() {
+    var options = document.getElementsByName("color-palette");
+    var selectedOption = "";
+
+    for(var i = 0; i < options.length; i++) {
+      if(options[i].checked) {
+        selectedOption = options[i].value;
+        break;
+      }
+    }
+
+    if(selectedOption === "option1") {
+      window.location.href = "summer_result_light.html";
+    } else if(selectedOption === "option2") {
+      window.location.href = "summer_result_true.html";
+    } else if(selectedOption === "option3") {
+      window.location.href = "summer_result_soft.html";
+    } else {
+      alert("컬러 팔레트를 선택해주세요.");
+    }
+}
+  </script>
+</body>
+</html>
