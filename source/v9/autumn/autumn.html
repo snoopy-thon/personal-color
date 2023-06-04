@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Webcam Sticker Color Changer</title>
+  <style>
+    #result_button {
+      background-color: skyblue;
+      color: white;
+      border: none;
+      
+      padding: 8px 20px;
+
+      border-radius: 10px; /* 모서리의 둥글기 정도를 조정합니다 */
+    }
+    #canvas {
+      border: 1px solid black;
+       }
+       /* 본문 가운데 정렬 */
+      body {
+        
+        justify-content: center; /* 가로 가운데 정렬 */
+        text-align: center; /* 내용 가운데 정렬 */
+      }
+
+      /* 제목 스타일 */
+      h1 {
+        margin-top: 100px; /* 원하는 여백 크기를 설정합니다 */
+      }   
+
+      /* 본문 내용 스타일 */
+      .content {
+        margin-top: 50px; /* 위쪽 여백 설정 */
+      }
+
+      /* 본문 내용 스타일 */
+      .content p {
+        margin: 20px 0; /* 상하 여백 설정 */
+      }
+  </style>
+</head>
+<body>
+  <h1>당신은 "가을 웜톤" 입니다!</h1>
+  <div>
+    <p>세부 톤을 진단하기 위해 아래 컬러팔레트 중 1개를 다시 선택해주세요!</p>
+    <label for="color-picker">Color:</label>
+    <input type="color" id="color-picker" list="autumn_soft">
+    <datalist id="autumn_soft">
+      <option value="#E0DDCC">autumn_soft</option>
+      <option value="#C5C0AA">autumn_soft</option>
+      <option value="#B5B196">autumn_soft</option>
+      <option value="#989890">autumn_soft</option>
+      <option value="#66635C">autumn_soft</option>
+      <option value="#DAAB7F">autumn_soft</option>
+      <option value="#957A5C">autumn_soft</option>
+      <option value="#705743">autumn_soft</option>
+      <option value="#A9A781">autumn_soft</option>
+      <option value="#85936F">autumn_soft</option>
+      <option value="#C45657">autumn_soft</option>
+      <option value="#A6474B">autumn_soft</option>
+      <option value="#862A37">autumn_soft</option>
+      <option value="#17635F">autumn_soft</option>
+      <option value="#1C3F29">autumn_soft</option>
+      <option value="#8792C0">autumn_soft</option>
+      <option value="#55608E">autumn_soft</option>
+      <option value="#194A72">autumn_soft</option>
+      <option value="#2E3351">autumn_soft</option>
+      <option value="#3C4446">autumn_soft</option>
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option1">
+    <input type="color" id="color-picker2" list="autumn_true">
+    <datalist id="autumn_true">
+      <option value="#E2D1B7">autumn_true</option>
+      <option value="#D0C5B1">autumn_true</option>
+      <option value="#878974">autumn_true</option>
+      <option value="#AF9270">autumn_true</option>
+      <option value="#C4C53D">autumn_true</option>
+      <option value="#D7967A">autumn_true</option>
+      <option value="#A86354">autumn_true</option>
+      <option value="#854543">autumn_true</option>
+      <option value="#694E31">autumn_true</option>
+      <option value="#45282C">autumn_true</option>
+      <option value="#D47E4B">autumn_true</option>
+      <option value="#B8463B">autumn_true</option>
+      <option value="#D22E35">autumn_true</option>
+      <option value="#852F2E">autumn_true</option>
+      <option value="#3B2027">autumn_true</option>
+      <option value="#6D5F32">autumn_true</option>
+      <option value="#1D3629">autumn_true</option>
+      <option value="#453852">autumn_true</option>
+      <option value="#1C7386">autumn_true</option>
+      <option value="#184655">autumn_true</option>
+
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option2">
+    <input type="color" id="color-picker3" list="autumn_dark">
+    <datalist id="autumn_dark">
+      <option value="#C5BEB6">autumn_dark</option>
+      <option value="#CFBB43">autumn_dark</option>
+      <option value="#CDAA82">autumn_dark</option>
+      <option value="#B78E58">autumn_dark</option>
+      <option value="#C3795E">autumn_dark</option>
+      <option value="#8E9D5A">autumn_dark</option>
+      <option value="#5F6738">autumn_dark</option>
+      <option value="#2B3328">autumn_dark</option>
+      <option value="#2B6654">autumn_dark</option>
+      <option value="#1D3C37">autumn_dark</option>
+      <option value="#9B3E49">autumn_dark</option>
+      <option value="#6F282E">autumn_dark</option>
+      <option value="#4A2129">autumn_dark</option>
+      <option value="#BD334A">autumn_dark</option>
+      <option value="#743435">autumn_dark</option>
+      <option value="#392934">autumn_dark</option>
+      <option value="#1C3532">autumn_dark</option>
+      <option value="#22405A">autumn_dark</option>
+      <option value="#393027">autumn_dark</option>
+      <option value="#252525">autumn_dark</option>
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option3">
+    <button id="result_button" onclick="getResult()">결과 보기</button>
+  </div>
+   <canvas id="canvas" width="640" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const colorPicker = document.getElementById('color-picker');
+    const colorPicker2 = document.getElementById('color-picker2');
+    const colorPicker3 = document.getElementById('color-picker3');
+    const ctx = canvas.getContext('2d');
+    let sticker = null;
+
+    
+
+    // 웹캠으로부터 비디오 스트림을 가져옵니다.
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        // 비디오가 로드되면 캔버스에 그립니다.
+        video.addEventListener('loadedmetadata', () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          draw(video);
+        });
+      })
+      .catch(err => {
+        console.error('Error accessing webcam', err);
+      });
+
+    // 캔버스에 비디오 스트림을 그립니다.
+      function draw(video) {
+      ctx.save();
+      ctx.scale(-1, 1); // x축 좌우반전
+      ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      ctx.restore();
+      if (sticker) {
+        const width = canvas.width; // 스티커 이미지의 크기를 조절합니다.
+        const height = sticker.height * 0.3;
+        const x = 0;
+        const y = canvas.height-height;
+        ctx.drawImage(sticker, x, y, width, height);
+      }
+      requestAnimationFrame(() => draw(video));
+      
+    }
+
+  colorPicker.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    // 스티커 이미지를 색상이 적용된 이미지로 다시 그립니다.
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+colorPicker2.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+colorPicker3.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+
+
+
+
+    // 스티커 이미지를 로드합니다.
+    const stickerImage = new Image();
+    stickerImage.onload = () => {
+      sticker = stickerImage;
+    };
+    stickerImage.src = '../images/personal.png'; // 스티커 이미지의 경로를 지정해야 합니다.
+
+
+        // 웹캠 접근 권한을 요청합니다.
+        navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        console.log('Webcam access granted');
+      })
+      .catch(err => {
+        console.error('Webcam access denied', err);
+      });
+
+      function getResult() {
+    var options = document.getElementsByName("color-palette");
+    var selectedOption = "";
+
+    for(var i = 0; i < options.length; i++) {
+      if(options[i].checked) {
+        selectedOption = options[i].value;
+        break;
+      }
+    }
+
+    if(selectedOption === "option1") {
+      window.location.href = "autumn_result_soft.html";
+    } else if(selectedOption === "option2") {
+      window.location.href = "autumn_result_true.html";
+    } else if(selectedOption === "option3") {
+      window.location.href = "autumn_result_dark.html";
+    } else {
+      alert("컬러 팔레트를 선택해주세요.");
+    }
+}
+  </script>
+</body>
+</html>
