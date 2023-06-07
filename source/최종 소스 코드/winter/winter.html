@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Webcam Sticker Color Changer</title>
+  <style>
+    #result_button {
+      background-color: skyblue;
+      color: white;
+      border: none;
+      
+      padding: 8px 20px;
+
+      border-radius: 10px; /* 모서리의 둥글기 정도를 조정합니다 */
+    }
+    #canvas {
+      border: 1px solid black;
+       }
+       /* 본문 가운데 정렬 */
+      body {
+        
+        justify-content: center; /* 가로 가운데 정렬 */
+        text-align: center; /* 내용 가운데 정렬 */
+      }
+
+      /* 제목 스타일 */
+      h1 {
+        margin-top: 100px; /* 원하는 여백 크기를 설정합니다 */
+      }   
+
+      /* 본문 내용 스타일 */
+      .content {
+        margin-top: 50px; /* 위쪽 여백 설정 */
+      }
+
+      /* 본문 내용 스타일 */
+      .content p {
+        margin: 20px 0; /* 상하 여백 설정 */
+      }
+  </style>
+</head>
+<body>
+  <h1>당신은 "겨울 쿨톤" 입니다!</h1>
+  <div>
+    <p>세부 톤을 진단하기 위해 아래 컬러팔레트 중 1개를 다시 선택해주세요!</p>
+    <label for="color-picker">Color:</label>
+    <input type="color" id="color-picker" list="winter_bright">
+    <datalist id="winter_bright">
+      <option value="#FFFFFF">winter_bright</option>
+      <option value="#B9BFBD">winter_bright</option>
+      <option value="#151314">winter_bright</option>
+      <option value="#2057A7">winter_bright</option>
+      <option value="#1B305F">winter_bright</option>
+      <option value="#EC7CBE">winter_bright</option>
+      <option value="#C64796">winter_bright</option>
+      <option value="#832A6A">winter_bright</option>
+      <option value="#602F67">winter_bright</option>
+      <option value="#9B2849">winter_bright</option>
+      <option value="#52D4E1">winter_bright</option>
+      <option value="#B3E4DE">winter_bright</option>
+      <option value="#D7D1ED">winter_bright</option>
+      <option value="#3ED284">winter_bright</option>
+      <option value="#1FA793">winter_bright</option>
+      <option value="#324D9C">winter_bright</option>
+      <option value="#2F2F6D">winter_bright</option>
+      <option value="#FDD2ED">winter_bright</option>
+      <option value="#857DC6">winter_bright</option>
+      <option value="#5D95D0">winter_bright</option>
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option1">
+    <input type="color" id="color-picker2" list="winter_true">
+    <datalist id="winter_true">
+      <option value="#FFFFFF">winter_true</option>
+      <option value="#3B4346">winter_true</option>
+      <option value="#0E0E0E">winter_true</option>
+      <option value="#2F2C5B">winter_true</option>
+      <option value="#20418E">winter_true</option>
+      <option value="#F5D4DF">winter_true</option>
+      <option value="#C7D5F0">winter_true</option>
+      <option value="#A8E9EF">winter_true</option>
+      <option value="#FFC1E8">winter_true</option>
+      <option value="#FE98DA">winter_true</option>
+      <option value="#38C372">winter_true</option>
+      <option value="#107B5D">winter_true</option>
+      <option value="#116872">winter_true</option>
+      <option value="#F95B9D">winter_true</option>
+      <option value="#D9374F">winter_true</option>
+      <option value="#5E3579">winter_true</option>
+      <option value="#1F2E4F">winter_true</option>
+      <option value="#1C372E">winter_true</option>
+      <option value="#562239">winter_true</option>
+      <option value="#3A2230">winter_true</option>
+
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option2">
+    <input type="color" id="color-picker3" list="winter_dark">
+    <datalist id="winter_dark">
+      <option value="#FFFFFF">winter_dark</option>
+      <option value="#000000">winter_dark</option>
+      <option value="#E67EA1">winter_dark</option>
+      <option value="#8E3450">winter_dark</option>
+      <option value="#361F27">winter_dark</option>
+      <option value="#3E2632">winter_dark</option>
+      <option value="#612429">winter_dark</option>
+      <option value="#321F23">winter_dark</option>
+      <option value="#1C6A98">winter_dark</option>
+      <option value="#154F63">winter_dark</option>
+      <option value="#9A67A0">winter_dark</option>
+      <option value="#542C51">winter_dark</option>
+      <option value="#2A1D24">winter_dark</option>
+      <option value="#145A40">winter_dark</option>
+      <option value="#283025">winter_dark</option>
+      <option value="#302221">winter_dark</option>
+      <option value="#2C2132">winter_dark</option>
+      <option value="#17383F">winter_dark</option>
+      <option value="#22508E">winter_dark</option>
+      <option value="#183B35">winter_dark</option>
+
+    </datalist>
+    <input type="radio" name="color-palette" value="option3">
+    <button id="result_button" onclick="getResult()">결과 보기</button>
+  </div>
+   <canvas id="canvas" width="640" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const colorPicker = document.getElementById('color-picker');
+    const colorPicker2 = document.getElementById('color-picker2');
+    const colorPicker3 = document.getElementById('color-picker3');
+    const ctx = canvas.getContext('2d');
+    let sticker = null;
+
+    
+
+    // 웹캠으로부터 비디오 스트림을 가져옵니다.
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        // 비디오가 로드되면 캔버스에 그립니다.
+        video.addEventListener('loadedmetadata', () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          draw(video);
+        });
+      })
+      .catch(err => {
+        console.error('Error accessing webcam', err);
+      });
+
+    // 캔버스에 비디오 스트림을 그립니다.
+      function draw(video) {
+      ctx.save();
+      ctx.scale(-1, 1); // x축 좌우반전
+      ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      ctx.restore();
+      if (sticker) {
+        const width = canvas.width; // 스티커 이미지의 크기를 조절합니다.
+        const height = sticker.height * 0.3;
+        const x = 0;
+        const y = canvas.height-height;
+        ctx.drawImage(sticker, x, y, width, height);
+      }
+      requestAnimationFrame(() => draw(video));
+      
+    }
+
+  colorPicker.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    // 스티커 이미지를 색상이 적용된 이미지로 다시 그립니다.
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+colorPicker2.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+colorPicker3.addEventListener('input', e => {
+  const color = e.target.value;
+  if (sticker) {
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = sticker.width;
+    canvas2.height = sticker.height;
+    ctx2.drawImage(sticker, 0, 0);
+    ctx2.globalCompositeOperation = 'source-in';
+    ctx2.fillStyle = color;
+    ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+    const newSticker = new Image();
+    newSticker.src = canvas2.toDataURL();
+    newSticker.onload = () => {
+      sticker = newSticker;
+    };
+  }
+});
+
+
+
+
+
+    // 스티커 이미지를 로드합니다.
+    const stickerImage = new Image();
+    stickerImage.onload = () => {
+      sticker = stickerImage;
+    };
+    stickerImage.src = '../images/personal.png'; // 스티커 이미지의 경로를 지정해야 합니다.
+
+
+        // 웹캠 접근 권한을 요청합니다.
+        navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        console.log('Webcam access granted');
+      })
+      .catch(err => {
+        console.error('Webcam access denied', err);
+      });
+
+      function getResult() {
+    var options = document.getElementsByName("color-palette");
+    var selectedOption = "";
+
+    for(var i = 0; i < options.length; i++) {
+      if(options[i].checked) {
+        selectedOption = options[i].value;
+        break;
+      }
+    }
+
+    if(selectedOption === "option1") {
+      window.location.href = "winter_result_bright.html";
+    } else if(selectedOption === "option2") {
+      window.location.href = "winter_result_true.html";
+    } else if(selectedOption === "option3") {
+      window.location.href = "winter_result_dark.html";
+    } else {
+      alert("컬러 팔레트를 선택해주세요.");
+    }
+}
+  </script>
+</body>
+</html>
